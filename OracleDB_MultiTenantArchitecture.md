@@ -1,0 +1,195 @@
+# 📘 Oracle Multitenant Architecture (CDB & PDB)
+
+## 1. What is a CDB (Container Database)?
+
+A **CDB** is the main **container database** in Oracle’s multitenant architecture (introduced from Oracle 12c).
+
+* It provides the **common infrastructure** (memory, background processes, system metadata).
+* It acts as the **foundation** where multiple **PDBs** (Pluggable Databases) can exist.
+* Instead of creating multiple separate databases, Oracle allows you to create **one CDB** and host many PDBs inside it.
+
+👉 **Analogy:**
+Think of a **CDB as an apartment building**:
+
+* Provides electricity, water, lifts, and security (common services).
+* Inside the building, there are independent **flats (PDBs)**.
+
+---
+
+## 2. What is a PDB (Pluggable Database)?
+
+A **PDB** is a **self-contained database** that resides inside a CDB.
+
+* It has its **own users, schemas, and data files**.
+* Each PDB is **independent** → data in one PDB does not affect another.
+* But PDBs **share the common infrastructure** from the CDB.
+
+👉 **Analogy:**
+Each **flat in the building** (PDB) belongs to a different family:
+
+* Families are independent.
+* If one paints their walls blue (modifies data), it does not affect neighbors.
+* But all share the same lifts, electricity, and security (CDB resources).
+
+---
+
+## 3. Root, Seed, and PDB
+
+* **CDB\$ROOT (Root Container):**
+
+  * The **foundation** of the CDB.
+  * Stores Oracle system metadata and common services.
+  * Does not contain user business data.
+
+* **PDB\$SEED (Seed Database):**
+
+  * A **read-only template PDB**.
+  * Used only for **creating new PDBs** quickly.
+  * Cannot be modified directly.
+
+* **Pluggable Database (PDB):**
+
+  * Independent, fully functional database.
+  * Holds business/application data.
+  * Can be unplugged from one CDB and plugged into another.
+
+---
+
+## 4. Users in CDB and PDB
+
+Oracle divides users into **two categories**:
+
+### (a) Common Users (CDB Users)
+
+* Exist in **all containers (CDB + all PDBs)**.
+* Created in the **CDB Root**.
+* Must begin with prefix **`C##`**.
+* Used mainly by **DBAs** to manage the entire system.
+
+👉 Example:
+
+```sql
+ALTER SESSION SET CONTAINER = CDB$ROOT;
+CREATE USER C##ADMIN IDENTIFIED BY admin123 CONTAINER=ALL;
+GRANT DBA TO C##ADMIN CONTAINER=ALL;
+```
+
+### (b) Local Users (PDB Users)
+
+* Exist **only inside a specific PDB**.
+* Created when connected to a particular PDB.
+* Used by **application developers and end-users**.
+
+👉 Example:
+
+```sql
+ALTER SESSION SET CONTAINER = XEPDB1;
+CREATE USER hr_user IDENTIFIED BY hr_pass;
+GRANT CONNECT, RESOURCE TO hr_user;
+```
+
+---
+
+## 5. Why Create Users Separately in CDB and PDB?
+
+* **CDB Users** → Needed for **administration across all PDBs**. Example: A DBA managing the full database system.
+* **PDB Users** → Needed for **business applications** inside each PDB. Example: HR application in HRPDB, Sales application in SALESPDB.
+
+👉 Without **local users**, you cannot store or access data inside a PDB.
+👉 Without **common users**, you cannot perform administrative tasks across containers.
+
+---
+
+## 6. Real-Time Example
+
+A **Bank** 🏦 using Oracle multitenant:
+
+* **CDB (Bank Building)** → Provides shared infrastructure.
+* **PDBs (Flats):**
+
+  * `LoanPDB` → Loans data
+  * `CardPDB` → Credit card transactions
+  * `HRPDB` → Employee information
+* **Common User (`C##DBA`)** → Bank DBA, manages all PDBs.
+* **Local Users (`loan_user`, `card_user`, `hr_user`)** → Application users for specific departments.
+
+---
+
+## 7. Oracle 21c – SQL Commands Reference
+
+### 🔹 Check Current Container
+
+```sql
+SHOW CON_NAME;
+```
+
+### 🔹 Switch from CDB to PDB
+
+```sql
+ALTER SESSION SET CONTAINER = <pluggableDatabase>;
+```
+
+### 🔹 View All Users
+
+```sql
+SELECT * FROM ALL_USERS;
+```
+
+### 🔹 View All Pluggable Databases
+
+```sql
+SELECT NAME FROM V$PDBS;
+```
+
+### 🔹 Check Database Name (CDB)
+
+```sql
+SELECT NAME FROM V$DATABASE;
+```
+
+### 🔹 Connect to Database
+
+```sql
+CONNECT <username>/<password>@<hostName>:<port>/<containerDatabase|pluggableDatabase> AS SYSDBA;
+```
+
+---
+
+## 8. User Creation & Privileges
+
+### 🔹 Create User in CDB (Common User)
+
+```sql
+ALTER SESSION SET CONTAINER = CDB$ROOT;
+CREATE USER C##<username> IDENTIFIED BY <password>;
+```
+
+### 🔹 Create User in PDB (Local User)
+
+```sql
+ALTER SESSION SET CONTAINER = XEPDB1;
+CREATE USER <username> IDENTIFIED BY <password>;
+```
+
+### 🔹 Grant Privileges
+
+```sql
+GRANT CREATE SESSION TO <username>;
+GRANT CONNECT, RESOURCE, DBA TO <username>;
+GRANT UNLIMITED TABLESPACE TO <username>;
+GRANT CREATE VIEW, CREATE PROCEDURE, CREATE SEQUENCE, CREATE TRIGGER TO <username>;
+GRANT ALL PRIVILEGES TO <username>;
+```
+
+---
+
+## 9. ✅ Summary
+
+* **CDB (Container Database):** Foundation, provides shared infrastructure.
+* **PDB (Pluggable Database):** Independent databases inside a CDB.
+* **Root (`CDB$ROOT`):** Common metadata and Oracle system data.
+* **Seed (`PDB$SEED`):** Template for creating new PDBs.
+* **Common Users (CDB):** Created in root, exist in all PDBs (used by DBAs).
+* **Local Users (PDB):** Created in individual PDBs, used for business applications.
+
+👉 **Benefit:** One CDB can host multiple PDBs, reducing cost, resource usage, and administration while keeping data securely isolated.
