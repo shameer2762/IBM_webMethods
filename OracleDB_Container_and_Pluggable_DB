@@ -1,0 +1,71 @@
+#Oracle 21C - SQL Commands
+Commands provided below will help you to create users and grant the permission to the users. Make sure to provide the: -
+
+<username> with your username
+
+<hostName> with the proper hostName
+
+<port> with the right portNumber and
+
+Specify the right <databaseName> i.e
+
+<containerDatabase> = XE
+
+<pluggableDatabase> = XEPDB1
+
+
+
+To view the connection name, execute the command: show con_name;
+
+
+
+To alter the session from Container to Pluggable database, execute the command
+
+alter session set container=<pluggableDatabase>
+
+
+
+To view all the users, execute the command: select * from all_users;
+
+
+
+To view the pluggable database name, execute the command: select name from v$pdbs;
+
+
+
+To check the databaseName, execute the command (In CDB): select name from v$database;
+
+
+
+v$database
+
+
+To connect to a particular user, execute the command:-
+
+connect <username>/<password>@<hostName>:<port>/<containerDatabase/pluggableDatabase> as sysdba [If Sysdba is the role, else you can remove sysdba]
+
+
+
+User Creation for
+
+Container Database = create user C##<username> identified by <password>;
+
+Pluggable Database = create user <username> identified by <password>;
+
+
+
+Provide the required Privileges to the username i.e. grant permissions to the username that you have created.
+
+grant create session to <username>;
+
+grant connect, resource, dba to <username>;
+
+grant unlimited tablespace to <username>;
+
+grant create view, create procedure, create sequence, create trigger to <username>;
+
+
+
+To provide all the access make sure to execute the following command
+
+grant all privileges to <username>;
