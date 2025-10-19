@@ -9,6 +9,8 @@ For example, a Flow Service might:
 - Perform a credit check  
 - Post the order to an internal ordering system  
 
+> !(images/FlowService_Creation.png)
+
 Important points:  
 - You create Flow Services using Designer (not by editing the XML manually).  
 - Flow Services are saved as XML files in a format understood by Designer/Integration Server.  
@@ -40,3 +42,4 @@ Here is a typical sequence to create a new Flow Service using Designer:
 - If you are starting from an XML/Schema source, Designer may create Document Types and set up mapping scaffolding automatically.  
 - Good practice: define your service signature clearly (inputs/outputs), keep logic modular, use descriptive names for steps.  
 - Note that in some versions you cannot edit the XML manually; use Designer editor only.
+
