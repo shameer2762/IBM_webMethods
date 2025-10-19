@@ -9,7 +9,7 @@ For example, a Flow Service might:
 - Perform a credit check  
 - Post the order to an internal ordering system  
 
-> !(images/FlowService_Creation.png)
+> ![Flow service creation Screenshot](../images/FlowService_Creation.png)
 
 Important points:  
 - You create Flow Services using Designer (not by editing the XML manually).  
@@ -36,10 +36,13 @@ Here is a typical sequence to create a new Flow Service using Designer:
 4. Define the input/output signature of the service (via the Inputs/Outputs tab) and then build the logic by dragging/pasting flow steps (INVOKE, MAP, etc.).  
 5. Save the service; it is now part of the Package and ready to be invoked.
 
-### Some tips / notes  
+### Some tips/notes  
 - Designer provides two views for building flows: the **Tree tab** (default) and the **Layout tab** (graphical). You can use whichever you find easier.  
 - The pipeline view is your friend — you can inspect input/output variables, map fields, etc.  
 - If you are starting from an XML/Schema source, Designer may create Document Types and set up mapping scaffolding automatically.  
 - Good practice: define your service signature clearly (inputs/outputs), keep logic modular, use descriptive names for steps.  
 - Note that in some versions you cannot edit the XML manually; use Designer editor only.
 
+
+
+** Link: https://community.ibm.com/community/user/viewdocument/webmethods-flow-tutorial-no2-cre?CommunityKey=82b75916-ed06-4a13-8eb6-0190da9f1bfa&tab=librarydocuments
